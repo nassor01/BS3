@@ -1,4 +1,4 @@
-# SwahiliPot Hub Room Booking System (Frontend)
+# SwahiliPot Hub Room Booking System
 
 ## Overview
 The **SwahiliPot Hub Room Booking System** is a web-based frontend application that allows users to create accounts, log in, search available rooms, book rooms, and securely log out.  
@@ -59,23 +59,7 @@ This:
 ---
 
 ## Application Flow
-
 ```text
 Signup → Login → Dashboard → Search Rooms → Book Room → Logout
 
----
-## Project Structure
 
-src/
-│
-├── models/
-├── controllers/
-├── views/
-├── components/
-├── routes/
-├── App.jsx
-└── main.jsx
----
-## Installation
-npm install
-npm run dev
