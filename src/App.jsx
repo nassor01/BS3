@@ -5,6 +5,7 @@ import Register from './views/signup';
 import Dashboard from './views/Dashboard';
 import AdminLogin from './views/AdminLogin';
 import AdminDashboard from './views/AdminDashboard';
+import Footer from './components/Footer';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Routes>
+            <Footer />
         </BrowserRouter>
     );
 }
