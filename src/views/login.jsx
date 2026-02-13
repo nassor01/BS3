@@ -39,12 +39,7 @@ export default function Login({ setIsLogin, setUser }) {
             >
                 Login
             </button>
-            <p
-                className="text-blue-600 cursor-pointer hover:underline"
-                onClick={() => setIsLogin(false)}
-            >
-                Create new account
-            </p>
+
         </div>
     );
 }

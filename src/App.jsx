@@ -6,6 +6,7 @@ import Dashboard from './views/Dashboard';
 import AdminLogin from './views/AdminLogin';
 import AdminDashboard from './views/AdminDashboard';
 import Footer from './components/Footer';
+import Layout from './components/Layout';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -20,6 +21,13 @@ function App() {
         setLoading(false);
     }, []);
 
+    const handleLogout = () => {
+        localStorage.removeItem('userSession');
+        localStorage.removeItem('isAdmin');
+        setUser(null);
+        window.location.href = '/login';
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-blue-600">
@@ -31,11 +39,19 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Dashboard user={user} setUser={setUser} />} />
+                <Route path="/" element={
+                    <Layout user={user} onLogout={handleLogout}>
+                        <Dashboard user={user} setUser={setUser} />
+                    </Layout>
+                } />
                 <Route path="/login" element={<LoginWrapper user={user} setUser={setUser} />} />
                 <Route path="/signup" element={<RegisterWrapper />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/dashboard" element={
+                    <Layout user={user || { name: 'Admin' }} isAdmin={true} onLogout={handleLogout}>
+                        <AdminDashboard />
+                    </Layout>
+                } />
             </Routes>
             <Footer />
         </BrowserRouter>

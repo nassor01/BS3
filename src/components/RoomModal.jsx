@@ -6,12 +6,7 @@ const RoomModal = ({ isOpen, onClose, room, isAdmin, onStatusChange }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all">
-                <div className="relative h-64 bg-blue-600">
-                    <img
-                        src={room?.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80'}
-                        alt={room?.name}
-                        className="w-full h-full object-cover opacity-60"
-                    />
+                <div className="relative h-48 bg-gradient-to-br from-blue-600 to-indigo-700">
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white p-2 rounded-full backdrop-blur-md transition-all"
@@ -54,8 +49,8 @@ const RoomModal = ({ isOpen, onClose, room, isAdmin, onStatusChange }) => {
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 mb-2">Current Status</h3>
                                 <span className={`px-4 py-2 rounded-full font-bold text-sm ${room?.isBooked
-                                        ? 'bg-red-100 text-red-600'
-                                        : 'bg-green-100 text-green-600'
+                                    ? 'bg-red-100 text-red-600'
+                                    : 'bg-green-100 text-green-600'
                                     }`}>
                                     {room?.isBooked ? 'Booked' : 'Available'}
                                 </span>
@@ -67,8 +62,8 @@ const RoomModal = ({ isOpen, onClose, room, isAdmin, onStatusChange }) => {
                                     <button
                                         onClick={() => onStatusChange(room?.id, !room?.isBooked)}
                                         className={`w-full py-2 rounded-lg font-bold transition-all ${room?.isBooked
-                                                ? 'bg-green-500 hover:bg-green-600 text-white'
-                                                : 'bg-red-500 hover:bg-red-600 text-white'
+                                            ? 'bg-green-500 hover:bg-green-600 text-white'
+                                            : 'bg-red-500 hover:bg-red-600 text-white'
                                             }`}
                                     >
                                         {room?.isBooked ? 'Mark as Available' : 'Mark as Booked'}

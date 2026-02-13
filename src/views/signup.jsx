@@ -37,12 +37,7 @@ export default function Register({ setIsLogin }) {
             >
                 Register
             </button>
-            <p
-                className="text-blue-600 cursor-pointer hover:underline"
-                onClick={() => setIsLogin(true)}
-            >
-                Already have an account? Login
-            </p>
+
         </div>
     );
 }

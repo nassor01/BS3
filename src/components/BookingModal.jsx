@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const BookingModal = ({ isOpen, onClose, room, onBook }) => {
     const [bookingDate, setBookingDate] = useState('');
     const [bookingTime, setBookingTime] = useState('');
+    const [duration, setDuration] = useState('2');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!isOpen) return null;
@@ -18,6 +19,7 @@ const BookingModal = ({ isOpen, onClose, room, onBook }) => {
                 roomName: room.name,
                 date: bookingDate,
                 time: bookingTime,
+                duration: `${duration} Hours`,
                 status: 'Pending'
             });
             setIsSubmitting(false);
@@ -41,26 +43,47 @@ const BookingModal = ({ isOpen, onClose, room, onBook }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
-                        <input
-                            type="date"
-                            required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                            value={bookingDate}
-                            onChange={(e) => setBookingDate(e.target.value)}
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                            <input
+                                type="date"
+                                required
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                value={bookingDate}
+                                onChange={(e) => setBookingDate(e.target.value)}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                            <input
+                                type="time"
+                                required
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                value={bookingTime}
+                                onChange={(e) => setBookingTime(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Time</label>
-                        <input
-                            type="time"
-                            required
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                            value={bookingTime}
-                            onChange={(e) => setBookingTime(e.target.value)}
-                        />
+                        <label className="block text-sm font-medium text-gray-700 mb-3">Duration</label>
+                        <div className="flex gap-4">
+                            {['2', '3'].map((d) => (
+                                <button
+                                    key={d}
+                                    type="button"
+                                    onClick={() => setDuration(d)}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 font-bold transition-all ${duration === d
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
+                                            : 'bg-white border-gray-200 text-gray-500 hover:border-blue-200'
+                                        }`}
+                                >
+                                    {d} Hours
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="bg-blue-50 p-4 rounded-lg">

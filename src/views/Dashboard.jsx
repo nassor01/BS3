@@ -20,11 +20,6 @@ const Dashboard = ({ user, setUser }) => {
         fetchRooms();
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('userSession');
-        setUser(null);
-    };
-
     const handleOpenBooking = (room) => {
         if (!user) {
             alert('Please login to book a room.');
@@ -40,62 +35,27 @@ const Dashboard = ({ user, setUser }) => {
     };
 
     const handleBooking = async (bookingData) => {
-        await createBooking(bookingData);
+        const enrichedBooking = {
+            ...bookingData,
+            userName: user.fullName || user.name || 'Member'
+        };
+        await createBooking(enrichedBooking);
         alert('Booking submitted successfully! Waiting for admin approval.');
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col">
-            {/* Hero Section */}
-            <div className="bg-blue-600 text-white py-20 px-4 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-                    <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-                </div>
-
-                <div className="max-w-6xl mx-auto z-10 relative flex flex-col md:flex-row justify-between items-center">
-                    <div>
-                        <h1 className="text-5xl md:text-7xl font-extrabold mb-4 tracking-tight">
-                            SWAHILIPOT HUB
-                        </h1>
-                        <p className="text-xl md:text-2xl font-light text-blue-100 max-w-xl">
-                            Empowering the Community through Innovation and Art.
-                        </p>
-                        {user && (
-                            <div className="mt-8 flex items-center gap-4 bg-white/10 w-fit px-6 py-3 rounded-2xl backdrop-blur-sm border border-white/10">
-                                <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center font-bold">
-                                    {user.name?.charAt(0) || 'U'}
-                                </div>
-                                <div>
-                                    <p className="text-sm text-blue-100">Welcome back,</p>
-                                    <p className="font-bold text-lg">{user.name || 'Member'}</p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="mt-8 md:mt-0 flex gap-4">
-                        {user ? (
-                            <button
-                                onClick={handleLogout}
-                                className="px-6 py-2 bg-red-500 text-white rounded-full font-bold hover:bg-red-600 transition-all shadow-lg"
-                            >
-                                Logout
-                            </button>
-                        ) : (
-                            <>
-                                <Link to="/login" className="px-6 py-2 bg-white text-blue-600 rounded-full font-bold hover:bg-blue-50 transition-all shadow-lg">
-                                    Login
-                                </Link>
-                                <Link to="/admin/login" className="px-6 py-2 bg-blue-700 text-white rounded-full font-bold hover:bg-blue-800 transition-all">
-                                    Admin
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
+        <div className="w-full">
+            <div className="mb-12">
+                <h1 className="text-4xl font-black text-gray-800 tracking-tight mb-2">
+                    Welcome to <span className="text-blue-600 italic">Swahilipot Hub</span>
+                </h1>
+                <p className="text-gray-500 text-lg">
+                    Empowering the Community through Innovation and Art.
+                </p>
             </div>
 
             {/* Rooms Section */}
-            <main className="max-w-6xl mx-auto px-4 py-16 w-full">
+            <main className="w-full">
                 {!user ? (
                     <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
                         <div className="max-w-md mx-auto">
@@ -123,12 +83,7 @@ const Dashboard = ({ user, setUser }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {rooms.map(room => (
                                     <div key={room.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                                        <div className="h-48 bg-gray-200 relative">
-                                            <img
-                                                src={`https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400`}
-                                                alt={room.name}
-                                                className="w-full h-full object-cover"
-                                            />
+                                        <div className="h-40 bg-gradient-to-br from-blue-600 to-indigo-700 relative">
                                             <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold ${room.isBooked ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
                                                 {room.isBooked ? 'Booked' : 'Available'}
                                             </div>
