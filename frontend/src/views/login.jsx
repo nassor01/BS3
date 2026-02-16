@@ -1,21 +1,17 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { login } from '../utils/api';
 
 export default function Login({ setIsLogin, setUser }) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        const savedUser = JSON.parse(localStorage.getItem("user"));
-
-        if (
-            savedUser &&
-            email === savedUser.email &&
-            password === savedUser.password
-        ) {
-            localStorage.setItem("userSession", JSON.stringify(savedUser));
-            setUser(savedUser);
-        } else {
-            alert("Invalid credentials");
+    const handleLogin = async () => {
+        try {
+            const user = await login({ email, password });
+            localStorage.setItem('userSession', JSON.stringify(user));
+            setUser(user);
+        } catch (error) {
+            alert('Invalid credentials');
         }
     };
 

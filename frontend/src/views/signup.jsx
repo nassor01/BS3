@@ -1,15 +1,19 @@
 import React, { useState } from "react";
+import { signup } from '../utils/api';
 
 export default function Register({ setIsLogin }) {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleRegister = () => {
-        const user = { fullName, email, password };
-        localStorage.setItem("user", JSON.stringify(user));
-        alert("Registration successful!");
-        setIsLogin(true);
+    const handleSignup = async () => {
+        try {
+            await signup({ fullName, email, password });
+            alert('Signup successful! Please login.');
+            window.location.href = '/login';
+        } catch (error) {
+            alert('Signup failed. Please try again.');
+        }
     };
 
     return (
@@ -32,10 +36,10 @@ export default function Register({ setIsLogin }) {
                 onChange={e => setPassword(e.target.value)}
             />
             <button
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-64"
-                onClick={handleRegister}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-64"
+                onClick={handleSignup}
             >
-                Register
+                Sign Up
             </button>
 
         </div>

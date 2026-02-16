@@ -1,53 +1,120 @@
-// Mock data for rooms
-const MOCK_ROOMS = [
-    { id: 1, name: 'Main Hall', capacity: 200, isBooked: false, description: 'Large event space for conferences and workshops.' },
-    { id: 2, name: 'Incubation Hub', capacity: 30, isBooked: false, description: 'Creative space for startups and developers.' },
-    { id: 3, name: 'Recording Studio', capacity: 5, isBooked: false, description: 'Professional audio and podcast recording space.' },
-    { id: 4, name: 'Meeting Room A', capacity: 10, isBooked: false, description: 'Private space for teamwork and meetings.' },
-];
-
-// Mock data for bookings
-const initialBookings = [];
-
-let MOCK_BOOKINGS = JSON.parse(localStorage.getItem('swahilipot_bookings')) || initialBookings;
-
-const saveBookings = (bookings) => {
-    localStorage.setItem('swahilipot_bookings', JSON.stringify(bookings));
-};
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export const getRooms = async () => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return MOCK_ROOMS;
-};
-
-export const getBookings = async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return MOCK_BOOKINGS;
+    try {
+        const response = await fetch(`${API_BASE_URL}/rooms`);
+        if (!response.ok) throw new Error('Failed to fetch rooms');
+        const data = await response.json();
+        // Map 'availability' to 'isBooked' (frontend expectation)
+        return data.map(room => ({
+            ...room,
+            isBooked: !room.availability
+        }));
+    } catch (error) {
+        console.error('Error fetching rooms:', error);
+        return [];
+    }
 };
 
 export const createBooking = async (bookingData) => {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    const newBooking = {
-        id: Math.floor(Math.random() * 1000),
-        ...bookingData,
-        userName: bookingData.userName || 'Unknown User',
-        status: 'Pending'
-    };
-    MOCK_BOOKINGS = [newBooking, ...MOCK_BOOKINGS];
-    saveBookings(MOCK_BOOKINGS);
-    return newBooking;
+    try {
+        // Enforce specific format for backend
+        const response = await fetch(`${API_BASE_URL}/bookings`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData),
+        });
+        if (!response.ok) throw new Error('Failed to create booking');
+        return await response.json();
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        throw error;
+    }
+};
+
+export const getBookings = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/bookings`);
+        if (!response.ok) throw new Error('Failed to fetch bookings');
+        const data = await response.json();
+        // Flatten nested objects for frontend
+        return data.map(booking => ({
+            ...booking,
+            userName: booking.User?.fullName || 'Unknown User',
+            roomName: booking.Room?.name || 'Unknown Room'
+        }));
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        return [];
+    }
 };
 
 export const updateBookingStatus = async (bookingId, status) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    MOCK_BOOKINGS = MOCK_BOOKINGS.map(b => b.id === bookingId ? { ...b, status } : b);
-    saveBookings(MOCK_BOOKINGS);
-    return true;
+    try {
+        const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+        });
+        if (!response.ok) throw new Error('Failed to update booking status');
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating booking status:', error);
+        throw error;
+    }
 };
 
 export const updateRoomStatus = async (roomId, isBooked) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // In a real app, this would update the DB
-    return true;
+    try {
+        const response = await fetch(`${API_BASE_URL}/rooms/${roomId}/availability`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ availability: !isBooked }),
+        });
+        if (!response.ok) throw new Error('Failed to update room availability');
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating room availability:', error);
+        throw error;
+    }
+};
+
+export const signup = async (userData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        });
+        if (!response.ok) throw new Error('Signup failed');
+        return await response.json();
+    } catch (error) {
+        console.error('Error during signup:', error);
+        throw error;
+    }
+};
+
+export const login = async (credentials) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+        if (!response.ok) throw new Error('Login failed');
+        return await response.json();
+    } catch (error) {
+        console.error('Error during login:', error);
+        throw error;
+    }
 };
