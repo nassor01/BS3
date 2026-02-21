@@ -1,10 +1,10 @@
 import { Booking, Room, User } from '../models/index.js';
+import { sendBookingNotification } from '../utils/mailer.js';
 
 export const createBooking = async (req, res) => {
     try {
-        const { roomId, userId, date, time } = req.body;
-        // Sequelize associations create foreign keys named `UserId` and `RoomId`.
-        // Accept either camelCase (`userId`/`roomId`) or capitalized keys (`UserId`/`RoomId`) from the client
+        const { roomId, userId, date, startTime, endTime } = req.body;
+        // Accept either camelCase or capitalized keys from the client
         const userIdVal = userId || req.body.UserId;
         const roomIdVal = roomId || req.body.RoomId;
 
@@ -13,7 +13,7 @@ export const createBooking = async (req, res) => {
             UserId: userIdVal,
             RoomId: roomIdVal,
             date,
-            time
+            time: `${startTime} - ${endTime}` // Combining for the existing 'time' field
         });
 
         // 2. Mark the room as unavailable (booked)
@@ -23,8 +23,20 @@ export const createBooking = async (req, res) => {
             await room.save();
         }
 
+        // 3. Send email notification
+        const user = await User.findByPk(userIdVal);
+        if (user && user.email) {
+            await sendBookingNotification(user.email, {
+                roomName: room ? room.name : 'Selected Room',
+                date: date,
+                startTime: startTime,
+                endTime: endTime
+            });
+        }
+
         res.status(201).json(booking);
     } catch (error) {
+        console.error('Booking creation error:', error);
         res.status(500).json({ message: error.message });
     }
 };
