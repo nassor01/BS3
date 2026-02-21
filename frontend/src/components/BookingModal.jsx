@@ -2,11 +2,27 @@ import React, { useState } from 'react';
 
 const BookingModal = ({ isOpen, onClose, room, onBook }) => {
     const [bookingDate, setBookingDate] = useState('');
-    const [bookingTime, setBookingTime] = useState('');
-    const [duration, setDuration] = useState('2');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!isOpen) return null;
+
+    const generateTimeOptions = () => {
+        const options = [];
+        for (let hour = 7; hour <= 21; hour++) {
+            for (let min = 0; min < 60; min += 30) {
+                const h = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const time = `${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')} ${ampm}`;
+                options.push(time);
+                if (hour === 21 && min === 0) break;
+            }
+        }
+        return options;
+    };
+
+    const timeOptions = generateTimeOptions();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,8 +34,8 @@ const BookingModal = ({ isOpen, onClose, room, onBook }) => {
                 roomId: room.id,
                 roomName: room.name,
                 date: bookingDate,
-                time: bookingTime,
-                duration: `${duration} Hours`,
+                startTime: startTime,
+                endTime: endTime,
                 status: 'Pending'
             });
             setIsSubmitting(false);
@@ -29,7 +45,7 @@ const BookingModal = ({ isOpen, onClose, room, onBook }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 transform transition-all">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 transform transition-all overflow-y-auto max-h-[90vh]">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-800">Book {room?.name}</h2>
                     <button
@@ -43,46 +59,46 @@ const BookingModal = ({ isOpen, onClose, room, onBook }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
-                            <input
-                                type="date"
-                                required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                value={bookingDate}
-                                onChange={(e) => setBookingDate(e.target.value)}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
-                            <input
-                                type="time"
-                                required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                value={bookingTime}
-                                onChange={(e) => setBookingTime(e.target.value)}
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                        <input
+                            type="date"
+                            required
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            value={bookingDate}
+                            onChange={(e) => setBookingDate(e.target.value)}
+                        />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Duration</label>
-                        <div className="flex gap-4">
-                            {['2', '3'].map((d) => (
-                                <button
-                                    key={d}
-                                    type="button"
-                                    onClick={() => setDuration(d)}
-                                    className={`flex-1 py-3 px-4 rounded-xl border-2 font-bold transition-all ${duration === d
-                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                                            : 'bg-white border-gray-200 text-gray-500 hover:border-blue-200'
-                                        }`}
-                                >
-                                    {d} Hours
-                                </button>
-                            ))}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                            <select
+                                required
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                            >
+                                <option value="" disabled>Start</option>
+                                {timeOptions.map(t => (
+                                    <option key={t} value={t}>{t}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                            <select
+                                required
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                            >
+                                <option value="" disabled>End</option>
+                                {timeOptions.map(t => (
+                                    <option key={t} value={t}>{t}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
