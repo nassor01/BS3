@@ -1,5 +1,5 @@
 import { Booking, Room, User } from '../models/index.js';
-import { sendBookingNotification } from '../utils/mailer.js';
+import { sendBookingNotification, sendStatusUpdateNotification } from '../utils/mailer.js';
 
 export const createBooking = async (req, res) => {
     try {
@@ -56,13 +56,41 @@ export const updateBookingStatus = async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-        const booking = await Booking.findByPk(id);
-        if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+        console.log(`🔄 Updating status for booking ID: ${id} to ${status}`);
+
+        const booking = await Booking.findByPk(id, {
+            include: [User, Room]
+        });
+
+        if (!booking) {
+            console.error(`❌ Booking with ID ${id} not found`);
+            return res.status(404).json({ message: 'Booking not found' });
+        }
 
         booking.status = status;
         await booking.save();
+        console.log(`✅ Database updated for booking ID: ${id}`);
+
+        // Send status update notification
+        const associatedUser = booking.User || booking.user;
+        const associatedRoom = booking.Room || booking.room;
+
+        if (associatedUser && associatedUser.email) {
+            console.log(`📨 Attempting to send status email to: ${associatedUser.email}`);
+            await sendStatusUpdateNotification(associatedUser.email, {
+                roomName: associatedRoom ? associatedRoom.name : 'Your Room',
+                date: booking.date,
+                time: booking.time,
+                status: status
+            });
+        } else {
+            console.warn(`⚠️ No user email found for booking ID: ${id}. User associated: ${associatedUser ? 'Yes' : 'No'}`);
+        }
+
         res.json(booking);
     } catch (error) {
+        console.error('❌ Status update notification error:', error);
         res.status(500).json({ message: error.message });
     }
 };
